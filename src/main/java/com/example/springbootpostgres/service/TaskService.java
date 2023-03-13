@@ -1,12 +1,11 @@
-package com.example.springbootmongo.service;
+package com.example.springbootpostgres.service;
 
-import com.example.springbootmongo.model.Task;
-import com.example.springbootmongo.repository.TasksRepository;
+import com.example.springbootpostgres.model.Task;
+import com.example.springbootpostgres.repository.TasksRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.UUID;
 
 @Service
 public class TaskService {
@@ -30,9 +29,6 @@ public class TaskService {
         return repository.findByImportance(imp);
     }
 
-    public List<Task> getTaskByAssignee(String assignee){
-        return repository.getTaskByAssignee(assignee);
-    }
     public Task updateTask(String tid,Task task){
         Task exisitingTask = getTaskById(tid);
         exisitingTask.setDescription(task.getDescription());

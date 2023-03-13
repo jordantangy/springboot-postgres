@@ -1,22 +1,26 @@
-package com.example.springbootmongo.model;
+package com.example.springbootpostgres.model;
 
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Generated;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
+import org.hibernate.annotations.GenericGenerator;
 
 
-
-@Document(collection = "users")
+@Table(name = "users")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
 public class User {
 
     @Id
+    @GeneratedValue(generator = "uuid")
+    @GenericGenerator(name = "uuid", strategy = "org.hibernate.id.UUIDGenerator")
+    @Column(name = "id", nullable = false, updatable = false)
     private String id;
 
     @NotBlank(message = "The username field is required")
@@ -25,6 +29,7 @@ public class User {
     private String email;
     @NotBlank(message = "The password field is required")
     private String password;
+
 
 
 }

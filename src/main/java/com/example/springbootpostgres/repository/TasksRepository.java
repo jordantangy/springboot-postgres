@@ -1,15 +1,14 @@
-package com.example.springbootmongo.repository;
+package com.example.springbootpostgres.repository;
 
-import com.example.springbootmongo.model.Task;
-import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.data.mongodb.repository.Query;
+import com.example.springbootpostgres.model.Task;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+
 
 import java.util.List;
 
-public interface TasksRepository extends MongoRepository<Task,String> {
+public interface TasksRepository extends JpaRepository<Task,String> {
 
         List<Task> findByImportance(int imp);
 
-    @Query("{assignee : ?0 }")
-    List<Task> getTaskByAssignee(String assignee);
 }

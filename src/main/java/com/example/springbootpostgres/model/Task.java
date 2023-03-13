@@ -1,18 +1,22 @@
-package com.example.springbootmongo.model;
+package com.example.springbootpostgres.model;
 
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
+import org.hibernate.annotations.GenericGenerator;
 
-@Document(collection = "tasks")
+@Table(name = "tasks")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Entity
 public class Task {
 
     @Id
+    @GeneratedValue(generator = "uuid")
+    @GenericGenerator(name = "uuid", strategy = "org.hibernate.id.UUIDGenerator")
+    @Column(name = "id", nullable = false, updatable = false)
     private String id;
     private String description;
     private int importance;

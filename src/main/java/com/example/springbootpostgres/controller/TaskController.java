@@ -1,7 +1,7 @@
 package com.example.springbootpostgres.controller;
 
-import com.example.springbootmongo.model.Task;
-import com.example.springbootmongo.service.TaskService;
+import com.example.springbootpostgres.model.Task;
+import com.example.springbootpostgres.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -36,10 +36,10 @@ public class TaskController {
         return taskService.getTaskImp(imp);
     }
 
-    @GetMapping("/assignee/{assignee}")
-    public List<Task> getTaskByAssignee(@PathVariable String assignee){
-        return taskService.getTaskByAssignee(assignee);
-    }
+//    @GetMapping("/assignee/{assignee}")
+//    public List<Task> getTaskByAssignee(@PathVariable String assignee){
+//        return taskService.getTaskByAssignee(assignee);
+//    }
 
     @PutMapping("/update/{tid}")
     public Task modifyTask(@PathVariable String tid, @RequestBody Task task){

@@ -1,8 +1,8 @@
 package com.example.springbootpostgres.controller;
 
-import com.example.springbootmongo.httpexception.UserException;
-import com.example.springbootmongo.model.User;
-import com.example.springbootmongo.service.UserService;
+import com.example.springbootpostgres.httpexception.UserException;
+import com.example.springbootpostgres.model.User;
+import com.example.springbootpostgres.service.UserService;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,6 +72,11 @@ public class UserController {
     public ResponseEntity<Object>  changePassword(@PathVariable String uid, @RequestBody ObjectNode JSONObject){
         String newPassword = JSONObject.get("password").asText().toString();
         return service.updatePassword(uid,newPassword);
+    }
+
+    @DeleteMapping
+    public ResponseEntity<Object> deleteAllUsers(){
+        return service.deleteAll();
     }
 
 

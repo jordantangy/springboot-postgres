@@ -1,19 +1,16 @@
-package com.example.springbootmongo.service;
+package com.example.springbootpostgres.service;
 
-import com.example.springbootmongo.httpexception.UserException;
-import com.example.springbootmongo.model.User;
-import com.example.springbootmongo.repository.UsersRepository;
+import com.example.springbootpostgres.httpexception.UserException;
+import com.example.springbootpostgres.model.User;
+import com.example.springbootpostgres.repository.UsersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -27,17 +24,23 @@ public class UserService {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         return encoder.encode(password);
     }
+    @Transactional
     public ResponseEntity<Object> addUser(User user) {
         boolean isUnique = repository.findAll().stream()
                                                .noneMatch(existingUser -> existingUser.getUsername().equals(user.getUsername()));
-        if(isUnique){
-            String password = user.getPassword();
-            String encodedPassword = encryptPassword(password);
-            user.setPassword(encodedPassword);
-            repository.save(user);
-        }
-        else{
-            throw new UserException("Username already exists, choose another username");
+        try{
+
+            if(isUnique){
+                String password = user.getPassword();
+                String encodedPassword = encryptPassword(password);
+                user.setPassword(encodedPassword);
+                repository.save(user);
+            }
+            else{
+                throw new UserException("Username already exists, choose another username");
+            }
+        }catch (UserException e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
         return ResponseEntity.status(HttpStatus.CREATED).body(user);
     }
@@ -107,6 +110,15 @@ public class UserService {
         user.setPassword(encryptPassword(newPassword));
         repository.save(user);
         return ResponseEntity.ok(user.getUsername() + " successfully modified password");
+    }
+
+    public ResponseEntity<Object> deleteAll(){
+        try{
+            repository.deleteAll();
+        }catch(Exception e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("not found");
+        }
+        return ResponseEntity.status(HttpStatus.OK).body("ok");
     }
 
 }
