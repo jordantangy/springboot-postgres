@@ -1,6 +1,7 @@
 package com.example.springbootpostgres.service;
 
 import com.example.springbootpostgres.httpexception.UserException;
+import com.example.springbootpostgres.model.Email;
 import com.example.springbootpostgres.model.User;
 import com.example.springbootpostgres.repository.UsersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,28 +19,51 @@ public class UserService {
 
     @Autowired
     public UsersRepository repository;
+    @Autowired
+    public EmailService emailService;
 
 
     public String encryptPassword(String password){
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         return encoder.encode(password);
     }
+
+    public ResponseEntity<Object> sendCrendentialsByEmail(String to,String username, String password){
+
+        try{
+            Email email = new Email();
+            email.setRecipient(to);
+            email.setSubject("Your account credentials");
+            email.setMsgBody("Username: "+ username + "\n" +"Your password is:" + password);
+            emailService.sendEmail(email);
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+        return ResponseEntity.ok("Email Sent Successfully");
+    }
+
+
     @Transactional
     public ResponseEntity<Object> addUser(User user) {
         boolean isUnique = repository.findAll().stream()
                                                .noneMatch(existingUser -> existingUser.getUsername().equals(user.getUsername()));
         try{
-
             if(isUnique){
                 String password = user.getPassword();
                 String encodedPassword = encryptPassword(password);
                 user.setPassword(encodedPassword);
-                repository.save(user);
+                ResponseEntity<Object> mailResponse = sendCrendentialsByEmail(user.getEmail(),user.getUsername(),password);
+                if(mailResponse.getStatusCode().is2xxSuccessful()){
+                    repository.save(user);
+                }else{
+                    String err = (String) mailResponse.getBody();
+                    throw new Exception(err);
+                }
             }
             else{
                 throw new UserException("Username already exists, choose another username");
             }
-        }catch (UserException e){
+        }catch (Exception e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
         return ResponseEntity.status(HttpStatus.CREATED).body(user);

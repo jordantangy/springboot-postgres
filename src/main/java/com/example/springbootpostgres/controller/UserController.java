@@ -1,7 +1,9 @@
 package com.example.springbootpostgres.controller;
 
 import com.example.springbootpostgres.httpexception.UserException;
+import com.example.springbootpostgres.model.Email;
 import com.example.springbootpostgres.model.User;
+import com.example.springbootpostgres.service.EmailService;
 import com.example.springbootpostgres.service.UserService;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import jakarta.validation.Valid;
