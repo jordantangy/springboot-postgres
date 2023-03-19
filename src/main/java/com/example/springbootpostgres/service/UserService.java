@@ -46,7 +46,7 @@ public class UserService {
     @Transactional
     public ResponseEntity<Object> addUser(User user) {
         boolean isUnique = repository.findAll().stream()
-                                               .noneMatch(existingUser -> existingUser.getUsername().equals(user.getUsername()));
+                                               .noneMatch(existingUser -> existingUser.getUsername().equals(user.getUsername()) || existingUser.getEmail().equals(user.getEmail()));
         try{
             if(isUnique){
                 String password = user.getPassword();
@@ -61,7 +61,7 @@ public class UserService {
                 }
             }
             else{
-                throw new UserException("Username already exists, choose another username");
+                throw new UserException("Username or Email already exists, choose another username");
             }
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
