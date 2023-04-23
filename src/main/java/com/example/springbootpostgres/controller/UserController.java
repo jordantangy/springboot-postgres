@@ -2,6 +2,7 @@ package com.example.springbootpostgres.controller;
 
 import com.example.springbootpostgres.httpexception.UserException;
 import com.example.springbootpostgres.model.Email;
+import com.example.springbootpostgres.model.Role;
 import com.example.springbootpostgres.model.User;
 import com.example.springbootpostgres.service.EmailService;
 import com.example.springbootpostgres.service.UserService;
@@ -79,6 +80,12 @@ public class UserController {
     @DeleteMapping
     public ResponseEntity<Object> deleteAllUsers(){
         return service.deleteAll();
+    }
+
+    @PatchMapping("/updaterole/{uid}")
+    public User updateRole(@PathVariable String uid, @RequestBody ObjectNode JSONObject){
+        String role = JSONObject.get("role").asText().toString();
+        return service.updateRole(uid,Role.valueOf(role));
     }
 
 

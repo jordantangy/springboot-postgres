@@ -2,6 +2,7 @@ package com.example.springbootpostgres.service;
 
 import com.example.springbootpostgres.httpexception.UserException;
 import com.example.springbootpostgres.model.Email;
+import com.example.springbootpostgres.model.Role;
 import com.example.springbootpostgres.model.User;
 import com.example.springbootpostgres.repository.UsersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -145,4 +146,9 @@ public class UserService {
         return ResponseEntity.status(HttpStatus.OK).body("ok");
     }
 
+    public User updateRole(String uid, Role role) {
+        User existingUser = checkUserExists(uid);
+        existingUser.setRole(role);
+        return repository.save(existingUser);
+    }
 }
