@@ -40,7 +40,7 @@ public class UserController {
     }
 
     @GetMapping("/email/{email}")
-    public User findUserByEmail(@PathVariable String email){
+    public Optional<User> findUserByEmail(@PathVariable String email){
         return  service.findByEmail(email);
     }
 
