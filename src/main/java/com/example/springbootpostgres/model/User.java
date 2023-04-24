@@ -1,22 +1,22 @@
 package com.example.springbootpostgres.model;
 
+import com.example.springbootpostgres.token.Token;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Generated;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+
 
 import java.util.Collection;
+import java.util.List;
 
 
 @Table(name = "users")
+@Builder
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -29,6 +29,8 @@ public class User implements UserDetails {
     @Column(name = "id", nullable = false, updatable = false)
     private String id;
 
+    private String firstname;
+    private String lastname;
     @NotBlank(message = "The username field is required")
     private String username;
     @Email(message = "Enter a valid email address")
@@ -40,28 +42,41 @@ public class User implements UserDetails {
     private Role role;
 
 
+    @OneToMany(mappedBy = "user")
+    private List<Token> tokens;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        return List.of(new SimpleGrantedAuthority(role.name()));
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isEnabled() {
-        return false;
+        return true;
     }
 }
