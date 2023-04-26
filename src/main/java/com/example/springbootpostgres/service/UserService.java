@@ -5,6 +5,7 @@ import com.example.springbootpostgres.model.Email;
 import com.example.springbootpostgres.model.Role;
 import com.example.springbootpostgres.model.User;
 import com.example.springbootpostgres.repository.UsersRepository;
+import com.example.springbootpostgres.token.TokenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +23,9 @@ public class UserService {
     public UsersRepository repository;
     @Autowired
     public EmailService emailService;
+
+    @Autowired
+    public TokenRepository tokenRepository;
 
 
     public String encryptPassword(String password){
@@ -48,14 +52,18 @@ public class UserService {
     public ResponseEntity<Object> addUser(User user) {
         boolean isUnique = repository.findAll().stream()
                                                .noneMatch(existingUser -> existingUser.getUsername().equals(user.getUsername()) || existingUser.getEmail().equals(user.getEmail()));
+        User saved_user = null;
         try{
             if(isUnique){
                 String password = user.getPassword();
                 String encodedPassword = encryptPassword(password);
                 user.setPassword(encodedPassword);
+                //If the user is not authenticated during mail sending, you
+                // need to go to google account , in the search bar search for "app password"
+                // and generate a new password for the app and copy paste it in the application.properties file
                 ResponseEntity<Object> mailResponse = sendCrendentialsByEmail(user.getEmail(),user.getUsername(),password);
                 if(mailResponse.getStatusCode().is2xxSuccessful()){
-                    repository.save(user);
+                   saved_user =  repository.save(user);
                 }else{
                     String err = (String) mailResponse.getBody();
                     throw new Exception(err);
@@ -67,7 +75,7 @@ public class UserService {
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
-        return ResponseEntity.status(HttpStatus.CREATED).body(user);
+        return ResponseEntity.status(HttpStatus.CREATED).body(saved_user);
     }
 
     public List<User> getAllUsers() {
@@ -121,8 +129,10 @@ public class UserService {
         return repository.save(existingUser);
     }
 
+    @Transactional
     public ResponseEntity<Object> deleteUser(String uid){
 
+        tokenRepository.deleteByUserId(uid);
         User user = checkUserExists(uid);
         repository.deleteById(uid);
         return ResponseEntity.ok(user.getUsername() + " deleted successfully");

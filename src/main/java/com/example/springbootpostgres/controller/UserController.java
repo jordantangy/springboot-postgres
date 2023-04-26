@@ -23,11 +23,11 @@ public class UserController {
     @Autowired
     private UserService service;
 
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Object> uploadUser(@Valid @RequestBody User user){
-        return service.addUser(user);
-    }
+//    @PostMapping
+//    @ResponseStatus(HttpStatus.CREATED)
+//    public ResponseEntity<Object> uploadUser(@Valid @RequestBody User user){
+//        return service.addUser(user);
+//    }
 
     @GetMapping
     public List<User> getAllUsers(){

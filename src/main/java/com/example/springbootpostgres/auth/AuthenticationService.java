@@ -1,6 +1,8 @@
 package com.example.springbootpostgres.auth;
 
 import com.example.springbootpostgres.config.JwtService;
+import com.example.springbootpostgres.httpexception.UserException;
+import com.example.springbootpostgres.service.UserService;
 import com.example.springbootpostgres.token.Token;
 import com.example.springbootpostgres.token.TokenRepository;
 import com.example.springbootpostgres.token.TokenType;
@@ -12,6 +14,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -28,23 +31,24 @@ public class AuthenticationService {
   private final JwtService jwtService;
   private final AuthenticationManager authenticationManager;
 
-  public AuthenticationResponse register(RegisterRequest request) {
-    var user = User.builder()
-        .firstname(request.getFirstname())
-        .lastname(request.getLastname())
-        .username(request.getUsername())
-        .email(request.getEmail())
-        .password(passwordEncoder.encode(request.getPassword()))
-        .role(Role.USER)
-        .build();
-    var savedUser = repository.save(user);
-    var jwtToken = jwtService.generateToken(user);
-    var refreshToken = jwtService.generateRefreshToken(user);
-    saveUserToken(savedUser, jwtToken);
-    return AuthenticationResponse.builder()
-        .accessToken(jwtToken)
-            .refreshToken(refreshToken)
-        .build();
+  private final UserService userService;
+
+  public ResponseEntity<?> register(User user) {
+    ResponseEntity<?> savedUser = userService.addUser(user);
+    System.out.println(savedUser.getBody());
+    if(savedUser.getBody() instanceof User) {
+      var jwtToken = jwtService.generateToken(user);
+      var refreshToken = jwtService.generateRefreshToken(user);
+      saveUserToken((User) savedUser.getBody(), jwtToken);
+      return ResponseEntity.ok(AuthenticationResponse.builder()
+              .accessToken(jwtToken)
+              .refreshToken(refreshToken)
+              .build());
+    }
+      else{
+        return ResponseEntity.status(400).body(savedUser.getBody());
+      }
+
   }
 
   public AuthenticationResponse authenticate(AuthenticationRequest request) {
