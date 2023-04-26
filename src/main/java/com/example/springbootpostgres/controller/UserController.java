@@ -50,6 +50,7 @@ public class UserController {
     public ResponseEntity<Object> login(@RequestBody ObjectNode JSONObject){
         String username = JSONObject.get("username").asText().toString();
         String password = JSONObject.get("password").asText().toString();
+        System.out.println(username);
         User user = service.findByUsername(username);
         try {
             if (user == null) {

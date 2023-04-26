@@ -15,4 +15,5 @@ public class MessageRequest {
 
     @NotBlank(message = "The message should not be empty")
     private String message;
+    
 }
