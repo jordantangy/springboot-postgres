@@ -58,16 +58,18 @@ public class UserService {
                 String password = user.getPassword();
                 String encodedPassword = encryptPassword(password);
                 user.setPassword(encodedPassword);
+                saved_user =  repository.save(user);
+
                 //If the user is not authenticated during mail sending, you
                 // need to go to google account , in the search bar search for "app password"
                 // and generate a new password for the app and copy paste it in the application.properties file
-                ResponseEntity<Object> mailResponse = sendCrendentialsByEmail(user.getEmail(),user.getUsername(),password);
-                if(mailResponse.getStatusCode().is2xxSuccessful()){
-                   saved_user =  repository.save(user);
-                }else{
-                    String err = (String) mailResponse.getBody();
-                    throw new Exception(err);
-                }
+//                ResponseEntity<Object> mailResponse = sendCrendentialsByEmail(user.getEmail(),user.getUsername(),password);
+//                if(mailResponse.getStatusCode().is2xxSuccessful()){
+//                   saved_user =  repository.save(user);
+//                }else{
+//                    String err = (String) mailResponse.getBody();
+//                    throw new Exception(err);
+//                }
             }
             else{
                 throw new UserException("Username or Email already exists, choose another username");

@@ -35,7 +35,6 @@ public class AuthenticationService {
 
   public ResponseEntity<?> register(User user) {
     ResponseEntity<?> savedUser = userService.addUser(user);
-    System.out.println(savedUser.getBody());
     if(savedUser.getBody() instanceof User) {
       var jwtToken = jwtService.generateToken(user);
       var refreshToken = jwtService.generateRefreshToken(user);
